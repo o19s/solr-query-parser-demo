@@ -134,6 +134,8 @@
     -->
     <codecFactory class="solr.SchemaCodecFactory"/>
 
+    <schemaFactory class="ClassicIndexSchemaFactory"/>
+
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
          Index Config - These settings control low-level behavior of indexing
          Most example settings here show the default value, but are commented
@@ -1192,7 +1194,7 @@
     </updateProcessor>
 
     <!-- The update.autoCreateFields property can be turned to false to disable schemaless mode -->
-    <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:true}"
+    <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:false}"
                                  processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
         <processor class="solr.LogUpdateProcessorFactory"/>
         <processor class="solr.DistributedUpdateProcessorFactory"/>
@@ -1327,6 +1329,7 @@
        <queryParser name="myparser" class="com.mycompany.MyQParserPlugin"/>
       -->
 
+    <!-- My query parsers -->
     <queryParser name="proximity" class="com.o19s.solr.qparser.ProximityQParserPlugin"/>
     <queryParser name="cap" class="com.o19s.solr.qparser.CapitalizationQParserPlugin"/>
 

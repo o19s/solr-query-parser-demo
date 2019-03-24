@@ -1,4 +1,4 @@
-package com.o19s.solr.qparser.analysis;
+package com.o19s.solr.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;

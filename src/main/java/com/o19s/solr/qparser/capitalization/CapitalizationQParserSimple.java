@@ -1,7 +1,8 @@
 package com.o19s.solr.qparser.capitalization;
 
+import com.o19s.solr.analysis.AnalyzerUtils;
+import com.o19s.solr.analysis.CapitalizationPayloadEnum;
 import com.o19s.solr.qparser.IQueryParser;
-import com.o19s.solr.qparser.analysis.AnalyzerUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.payloads.SpanPayloadCheckQuery;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,14 +25,43 @@ public class CapitalizationQParserSimple implements IQueryParser {
     private String fieldName;
     private Analyzer analyzer;
 
+    /**
+     * Constructor.
+     *
+     * @param fieldName Field name.
+     * @param analyzer  Query-time analyzer.
+     */
     public CapitalizationQParserSimple(String fieldName, Analyzer analyzer) {
         this.fieldName = fieldName;
         this.analyzer = analyzer;
     }
 
+    /**
+     * IQueryParser::parse implementation.
+     *
+     * @param qstr        Search string (As typed by the end-user).
+     * @param mmAsPercent Minimum should match percentage (Not used here).
+     * @return A Lucene query.
+     * @throws SyntaxError When the search string does not adhere to the capitalization clause syntax.
+     */
     @Override
     public Query parse(String qstr, int mmAsPercent) throws SyntaxError {
 
+        CapitalizationParseTree parseTree = buildParseTree(qstr);
+
+        return new SpanPayloadCheckQuery(
+                new SpanTermQuery(new Term(fieldName, parseTree.getSearchTerm())),
+                Collections.singletonList(new BytesRef(parseTree.getPayloadEnum().getPayload())));
+    }
+
+    /**
+     * Parses a capitalization search clause, e.g., firstcap(dog), and produces a
+     * rudimentary parse tree.
+     *
+     * @param qstr Search string.
+     * @return A capitalization parse tree.
+     */
+    private CapitalizationParseTree buildParseTree(String qstr) throws SyntaxError {
         String usage = "Usage: [firstcap|allcap|cap](term). Example: firstcap(trump)";
         String invalidSyntaxErrMsg = "Invalid syntax \"%s\"; %s";
 
@@ -40,10 +71,14 @@ public class CapitalizationQParserSimple implements IQueryParser {
             throw new SyntaxError(String.format(invalidSyntaxErrMsg, qstr, usage));
         }
 
-        String operator = matcher.group(1).trim().toLowerCase();
+        String operatorName = matcher.group(1).trim().toLowerCase();
+        Optional<CapitalizationPayloadEnum> capEnumOpt = CapitalizationPayloadEnum.getPayloadForOperator(operatorName);
+        if (!capEnumOpt.isPresent()) {
+            throw new SyntaxError(String.format("Can't find the payload associated with the operator \"%s\"", operatorName));
+        }
         String searchTerm = matcher.group(2).trim();
 
-        LOG.info("Op=\"{}\", term=\"{}\"", operator, searchTerm);
+        LOG.info("Op=\"{}\", term=\"{}\"", operatorName, searchTerm);
 
         List<String> analyzedTerms = AnalyzerUtils.analyze(analyzer, fieldName, searchTerm);
 
@@ -51,9 +86,6 @@ public class CapitalizationQParserSimple implements IQueryParser {
             throw new SyntaxError(String.format(invalidSyntaxErrMsg, qstr, usage));
         }
 
-        return new SpanPayloadCheckQuery(
-                new SpanTermQuery(new Term(fieldName, analyzedTerms.get(0))),
-                Collections.singletonList(new BytesRef(operator)));
-
+        return new CapitalizationParseTree(capEnumOpt.get(), analyzedTerms.get(0));
     }
 }
