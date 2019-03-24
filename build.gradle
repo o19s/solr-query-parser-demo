@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group 'com.o19s.solr.qparser'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://maven.restlet.org'
+    }
+}
+
+def slf4jVersion = '1.7.24'
+def luceneVersion = '7.7.1'
+def solrVersion = '7.7.1'
+
+dependencies {
+
+    compileOnly group: 'org.slf4j', name: 'slf4j-api', version: "${slf4jVersion}"
+    compileOnly group: 'org.apache.lucene', name: 'lucene-core', version: "${luceneVersion}"
+    compileOnly group: 'org.apache.lucene', name: 'lucene-queries', version: "${luceneVersion}"
+    compileOnly group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: "${luceneVersion}"
+    compileOnly group: 'org.apache.solr', name: 'solr-core', version: "${solrVersion}"
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.apache.solr', name: 'solr-test-framework', version: "${solrVersion}"
+}
