@@ -91,7 +91,7 @@
        <lib path="../a-jar-that-does-not-exist.jar" />
     -->
 
-    <!-- MyQParser jar -->
+    <!-- myqueryparser jar location -->
     <lib dir="${solr.install.dir:../../../..}/../build/libs" regex=".*\.jar"/>
 
     <!-- Data Directory
@@ -1343,12 +1343,13 @@
             <str name="defType">proximity</str>
 
             <!-- Search felds -->
-            <str name="qf">title_txt</str>
+            <str name="qf">title_t</str>
+
+            <!-- Recall parameters -->
+            <str name="mm">100</str>
 
             <!-- Returned fields -->
-            <str name="fl">
-                id, title_txt, pub_dt, popularity_i, $luceneScore, $dateBoost, $popularityBoost, $myscore, _version_
-            </str>
+            <str name="fl">id, title_t, pub_dt, popularity_i, $luceneScore, $dateBoost, $popularityBoost, $myscore</str>
 
             <!-- Boosts -->
             <!-- Date boost -->
@@ -1366,7 +1367,7 @@
             <!-- Highlighter -->
             <str name="hl">true</str>
             <str name="hl.method">unified</str>
-            <str name="hl.fl">title_txt</str>
+            <str name="hl.fl">title_t</str>
 
             <!-- Facets -->
             <str name="facet">true</str>

@@ -5,13 +5,13 @@ import java.util.List;
 
 public class ProximityParseTree {
 
-    String operator;
-    int distance;
-    boolean inOrder;
-    List<String> leftTerms;
-    List<String> rightTerms;
+    private String operator;
+    private int distance;
+    private boolean inOrder;
+    private List<String> leftTerms;
+    private List<String> rightTerms;
 
-    public ProximityParseTree(String operator, int distance, boolean inOrder, List<String> leftTerms, List<String> rightTerms) {
+    ProximityParseTree(String operator, int distance, boolean inOrder, List<String> leftTerms, List<String> rightTerms) {
         this.operator = operator;
         this.distance = distance;
         this.inOrder = inOrder;
@@ -23,19 +23,19 @@ public class ProximityParseTree {
         return operator;
     }
 
-    public int getDistance() {
+    int getDistance() {
         return distance;
     }
 
-    public boolean isInOrder() {
+    boolean isInOrder() {
         return inOrder;
     }
 
-    public List<String> getLeftTerms() {
+    List<String> getLeftTerms() {
         return leftTerms;
     }
 
-    public List<String> getRightTerms() {
+    List<String> getRightTerms() {
         return rightTerms;
     }
 }

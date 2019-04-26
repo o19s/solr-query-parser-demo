@@ -13,19 +13,20 @@ import org.slf4j.LoggerFactory;
 public class ProximityQParser extends QParser {
     private static final Logger LOG = LoggerFactory.getLogger(ProximityQParser.class);
 
-    public ProximityQParser(String qstr, SolrParams localParams, SolrParams params, SolrQueryRequest req) {
+    ProximityQParser(String qstr, SolrParams localParams, SolrParams params, SolrQueryRequest req) {
         super(qstr, localParams, params, req);
     }
 
     public Query parse() throws SyntaxError {
         // Get the field to query
-        String qf = getParam("qf");
-        String mm = getParam("mm");
+        String qf = getParam("qf"); // Query field (single-field at the moment)
+        String mm = getParam("mm"); // Minimum should match (as a percentage)
         LOG.info("qf: {}; mm: {}", qf, mm);
 
         // Get the query-time analyzer for "qf"
         Analyzer analyzer = req.getCore().getLatestSchema().getFieldType(qf).getQueryAnalyzer();
 
+        // Use the "Simple" proximity query parser for illustration purposes
         IQueryParser parser = new ProximityQParserSimple(qf, analyzer);
 
         int mmAsPercent = 100;
